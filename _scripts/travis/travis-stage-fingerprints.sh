@@ -32,12 +32,21 @@ opp_featuretool enable VoIPStream VoIPStream_examples TCP_NSC TCP_lwIP
 # See https://github.com/ccache/ccache/issues/222
 echo -e "CFLAGS += -fcolor-diagnostics\n\n$(cat src/makefrag)" > src/makefrag
 
+# enable instrumentation for code coverage reporting (to make the CFLAGS the same, and ccache happy)
+echo -e "CFLAGS += -fprofile-instr-generate -fcoverage-mapping\n$(cat src/makefrag)" > src/makefrag
+echo -e "LDFLAGS += -fprofile-instr-generate -fcoverage-mapping\n$(cat src/makefrag)" > src/makefrag
+
 echo -e "\nBuilding (silently)...\n"
 make makefiles > /dev/null 2>&1
 make MODE=$MODE USE_PRECOMPILED_HEADER=no -j $(nproc) > /dev/null 2>&1
 
 echo -e "\nccache summary:\n"
 ccache -s
+
+if [ "$MODE" = "release" ]; then
+    export LLVM_PROFILE_FILE="/root/coverage_profiles/inet-%h-%p.profraw"
+    cp src/libINET.so /root/coverage_profiles
+fi
 
 echo -e "\nBuild finished, starting fingerprint tests..."
 echo -e "Additional arguments passed to fingerprint test script: " $@ "\n"

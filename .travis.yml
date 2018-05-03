@@ -2,11 +2,6 @@ sudo: required
 
 language: generic
 
-notifications:
-  email:
-    recipients:
-      - inet@omnetpp.org
-
 services:
   - docker
 
@@ -16,12 +11,14 @@ before_install:
 cache:
   directories:
     - $HOME/docker_ccache
+    - $HOME/coverage_profiles
 
 # This is not used directly by Travis (the name doesn't matter), we just reuse it in script: nodes.
 docker_command: &DOCKER_COMMAND travis_wait 30 sleep infinity &
                   docker run -ti --env TARGET_PLATFORM --env MODE --env TRAVIS_REPO_SLUG
                   -v /home/travis/build/$TRAVIS_REPO_SLUG:/$TRAVIS_REPO_SLUG
-                  -v $HOME/docker_ccache:/root/.ccache omnetpp/travis-inet:5.4.1-180629
+                  -v $HOME/docker_ccache:/root/.ccache -v $HOME/coverage_profiles:/root/coverage_profiles
+                  omnetpp/travis-inet:5.4.1-180629
                   /bin/bash /$TRAVIS_REPO_SLUG/_scripts/travis/travis-stage-$STAGE.sh $INNER_ARGS
                    # the last two (STAGE and INNER_ARGS) come from export statements, not env: lines
 
@@ -121,4 +118,9 @@ jobs:
       env: TARGET_PLATFORM=linux MODE=debug
     # TODO add release mode when the runner script supports it
 
+    - stage: coverage
+      script:
+        - export STAGE=coverage # not env, so it doesn't affect the cache key
+        - *DOCKER_COMMAND
+      env: TARGET_PLATFORM=linux MODE=debug
 # "Look what you made me do", Travis.

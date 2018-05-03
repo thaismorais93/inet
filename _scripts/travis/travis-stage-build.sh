@@ -34,6 +34,10 @@ if [ "$TARGET_PLATFORM" = "linux" ]; then
     # and it has a different flag for this. And we only need this for linux anyway.
     echo -e "CFLAGS += -fcolor-diagnostics\n\n$(cat src/makefrag)" > src/makefrag
 
+    # enable instrumentation for code coverage reporting, also only on linux/clang
+    echo -e "CFLAGS += -fprofile-instr-generate -fcoverage-mapping\n$(cat src/makefrag)" > src/makefrag
+    echo -e "LDFLAGS += -fprofile-instr-generate -fcoverage-mapping\n$(cat src/makefrag)" > src/makefrag
+
     # On linux we can't use precompiled headers, because ccache can't work with them,
     # and we need ccache, but we are fine without precompiled headers (on linux that is).
     PCH=no
