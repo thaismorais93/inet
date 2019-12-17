@@ -43,9 +43,9 @@ make MODE=$MODE USE_PRECOMPILED_HEADER=no -j $(nproc) > /dev/null 2>&1
 echo -e "\nccache summary:\n"
 ccache -s
 
-if [ "$MODE" = "release" ]; then
+if [ "$MODE" = "debug" ]; then
     export LLVM_PROFILE_FILE="/root/coverage_profiles/inet-%h-%p.profraw"
-    cp src/libINET.so /root/coverage_profiles
+    cp src/libINET_dbg.so /root/coverage_profiles
 fi
 
 echo -e "\nBuild finished, starting fingerprint tests..."

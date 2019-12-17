@@ -43,7 +43,7 @@ ccache -s
 
 if [ "$MODE" = "debug" ]; then
     export LLVM_PROFILE_FILE="/root/coverage_profiles/inet-%h-%p.profraw"
-    cp src/libINET.so /root/coverage_profiles
+    cp src/libINET_dbg.so /root/coverage_profiles
 fi
 
 echo -e "\nBuild finished, starting unit tests..."
